@@ -1,10 +1,11 @@
-package com.wby.store.usermanager;
+package com.wby.store.order;
 
 import org.junit.Test;
+
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class UserManagerApplicationTests {
+class StoreOrderWebApplicationTests {
 
     @Test
     void contextLoads() {
