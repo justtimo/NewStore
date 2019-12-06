@@ -1,9 +1,6 @@
 package com.wby.store.service;
 
-import com.wby.store.bean.BaseAttrInfo;
-import com.wby.store.bean.BaseCatalog1;
-import com.wby.store.bean.BaseCatalog2;
-import com.wby.store.bean.BaseCatalog3;
+import com.wby.store.bean.*;
 
 import java.util.List;
 
@@ -40,4 +37,22 @@ public interface MangerService{
      * 根据平台属性id查询平台属性详情，顺便吧该属性值的属性列表也取出来
      */
     public BaseAttrInfo getAttrInfo(String attrId);
+
+    /**
+     * 商品spu列表查询
+     */
+    List<SpuInfo> getSpuList(String catalog3Id);
+
+    /**
+     * 查询基本销售属性表
+     * @return
+     */
+    List<BaseSaleAttr> getBaseSaleAttrList();
+
+    /**
+     * 保存spu商品信息
+     * @param spuInfo
+     */
+    public void saveSpuInfo(SpuInfo spuInfo);
+
 }
