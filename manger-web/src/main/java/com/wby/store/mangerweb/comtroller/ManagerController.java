@@ -65,4 +65,9 @@ public class ManagerController {
         mangerService.saveSpuInfo(spuInfo);
         return "ok";
     }
+
+    @GetMapping("spuImageList")
+    public List<SpuImage> getSpuImageList(String spuId){
+        return mangerService.getSpuImageList(spuId);
+    }
 }

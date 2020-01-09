@@ -7,6 +7,9 @@ import javax.persistence.Column;
 import javax.persistence.Id;
 import java.io.Serializable;
 
+/**
+ * 平台属性值表
+ */
 @Data
 @NoArgsConstructor
 public class BaseAttrValue implements Serializable {

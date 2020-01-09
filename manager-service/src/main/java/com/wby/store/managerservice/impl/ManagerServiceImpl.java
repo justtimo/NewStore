@@ -115,6 +115,7 @@ public class ManagerServiceImpl implements MangerService {
 
     @Override
     public void saveSpuInfo(SpuInfo spuInfo) {
+        //spu基本信息
         if (spuInfo.getId()==null || spuInfo.getId().length()==0){
             //保存
             spuInfo.setId(null);
@@ -164,6 +165,10 @@ public class ManagerServiceImpl implements MangerService {
             }
         }
 
+    @Override
+    public List<SpuImage> getSpuImageList(String spuId) {
+        return null;
+    }
 
 
 }

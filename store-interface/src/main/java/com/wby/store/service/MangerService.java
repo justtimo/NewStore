@@ -55,4 +55,11 @@ public interface MangerService{
      */
     public void saveSpuInfo(SpuInfo spuInfo);
 
+    /**
+     * 初始化sku页面，获取图片列表
+     * @param spuId
+     * @return
+     */
+    public List<SpuImage> getSpuImageList(String spuId);
+
 }
