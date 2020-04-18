@@ -3,6 +3,7 @@ package com.wby.store.mangerweb.comtroller;
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.wby.store.bean.*;
 import com.wby.store.service.MangerService;
+import org.apache.ibatis.annotations.Options;
 import org.springframework.web.bind.annotation.*;
 
 import javax.websocket.server.PathParam;
@@ -31,8 +32,8 @@ public class ManagerController {
     }
 
     @GetMapping("attrInfoList")
-    public List<BaseAttrInfo> getAttrInfoList(String baseCatalog3Id){
-        return  mangerService.getAttrList(baseCatalog3Id);
+    public List<BaseAttrInfo> getAttrInfoList(String catalog3Id){
+        return  mangerService.getAttrList(catalog3Id);
     }
 
     @PostMapping("saveAttrInfo")
@@ -70,4 +71,11 @@ public class ManagerController {
     public List<SpuImage> getSpuImageList(String spuId){
         return mangerService.getSpuImageList(spuId);
     }
+
+    @GetMapping("spuSaleAttrList")
+    public List<SpuSaleAttr> getSpuSaleAttrList(String spuId){
+        return  mangerService.getSpuSaleAttrList(spuId);
+    }
+
+
 }

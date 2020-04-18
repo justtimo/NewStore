@@ -3,6 +3,7 @@ package com.wby.store.service;
 import com.wby.store.bean.*;
 
 import java.util.List;
+import java.util.Map;
 
 public interface MangerService{
     /**
@@ -22,8 +23,6 @@ public interface MangerService{
 
     /**
      * 根据三级分类查询平台属性
-
-     * 删除平台属性
      */
     public List<BaseAttrInfo> getAttrList(String catalog3Id);
 
@@ -61,5 +60,41 @@ public interface MangerService{
      * @return
      */
     public List<SpuImage> getSpuImageList(String spuId);
+
+    /**
+     * 根据spuID查询销售属性
+     * @param spuId
+     * @return
+     */
+    public List<SpuSaleAttr> getSpuSaleAttrList(String spuId);
+
+    /**
+     * 保存skuInfo
+     * @param skuInfo
+     * @return
+     */
+    public void saveSkuInfo( SkuInfo skuInfo);
+
+    /**
+     * chaxun skuInfo
+     * @param skuId
+     * @return
+     */
+    public SkuInfo getSkuINfo(String skuId);
+
+    /**
+     * 根据spuId查询销售属性，选中传入的sku涉及的销售属性
+     * @param skuId
+     * @param spuId
+     * @return
+     */
+    public List<SpuSaleAttr> getSpuSaleAttrListCheckSku(String skuId,String spuId);
+
+    /**
+     * 根据spuId查询已有的sku涉及的销售属性清单
+     * @param spuId
+     * @return
+     */
+    public Map getSkuValueIdsMap(String spuId);
 
 }
