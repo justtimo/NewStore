@@ -80,7 +80,10 @@ public interface MangerService{
      * @param skuId
      * @return
      */
+    public SkuInfo getSkuINfo_reids(String skuId);
     public SkuInfo getSkuINfo(String skuId);
+    public SkuInfo getSkuINfoDB(String skuId);
+
 
     /**
      * 根据spuId查询销售属性，选中传入的sku涉及的销售属性
