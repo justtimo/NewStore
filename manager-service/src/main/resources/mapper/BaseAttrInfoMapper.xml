@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper SYSTEM "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wby.store.managerservice.mapper.BaseAttrInfoMapper">
+    <select id="getBaseAttrInfoListByCatalog3Id" resultMap="baseAttrList">
+        SELECT
+        i.id,i.attr_name,i.catalog3_id,v.id v_id,v.attr_id v_attr_id,v.value_name
+        from base_attr_info i
+        INNER JOIN base_attr_value v
+        on i.id=v.attr_id
+        where i.catalog3_id=#{catalog3Id}
+    </select>
+    <resultMap id="baseAttrList" type="com.wby.store.bean.BaseAttrInfo" autoMapping="true">
+        <result property="id" column="id"></result>
+        <result property="attrName" column="attr_name"></result>
+        <result property="catalog3Id" column="catalog3_id"></result>
+        <collection property="attrValueList" ofType="com.wby.store.bean.BaseAttrValue" autoMapping="true">
+            <result property="id" column="v_id"></result>
+            <result property="valueName" column="value_name"></result>
+            <result property="attrId" column="v_attr_id"></result>
+        </collection>
+    </resultMap>
+
+    <select id="getBaseAttrInfoListByValueIds" resultMap="baseAttrList">
+        SELECT
+        i.id,i.attr_name,i.catalog3_id,v.id v_id,v.attr_id v_attr_id,v.value_name
+        from base_attr_info i
+        INNER JOIN base_attr_value v
+        on i.id=v.attr_id
+        WHERE v.id IN (${valueIds})
+    </select>
+</mapper>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper SYSTEM "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wby.store.managerservice.mapper.SpuSaleAttrMapper">
+    <select id="getSpuSaleAttrListBySpuId" resultMap="saleAttrList">
+        SELECT
+        a.id,a.spu_id,a.sale_attr_id,a.sale_attr_name,v.id v_id,v.spu_id v_spu_id,v.sale_attr_id v_sale_attr_id,v.sale_attr_value_name v_value_name
+        from spu_sale_attr a
+        INNER JOIN  spu_sale_attr_value v
+        on a.sale_attr_id=v.sale_attr_id
+        and a.spu_id=v.spu_id
+        where a.spu_id=#{spuId}
+    </select>
+    <resultMap id="saleAttrList" type="com.wby.store.bean.SpuSaleAttr" autoMapping="true">
+        <result property="id" column="id"></result>
+        <result property="saleAttrId" column="sale_attr_id"></result>
+        <result property="saleAttrName" column="sale_attr_name"></result>
+        <result property="spuId" column="spu_id"></result>
+        <collection property="spuSaleAttrValueList" ofType="com.wby.store.bean.SpuSaleAttrValue" autoMapping="true">
+            <result property="id" column="v_id"></result>
+            <result property="spuId" column="v_spu_id"></result>
+            <result property="saleAttrId" column="v_sale_attr_id"></result>
+            <result property="saleAttrValueName" column="v_value_name"></result>
+        </collection>
+
+    </resultMap>
+
+
+    <select id="getSpuSaleAttrListBySpuIdCheckSku" resultMap="saleAttrList">
+        SELECT
+        a.id,a.spu_id,a.sale_attr_id,a.sale_attr_name,v.id v_id,v.spu_id v_spu_id,v.sale_attr_id v_sale_attr_id,v.sale_attr_value_name v_value_name,
+				IF(ssav.sale_attr_value_id,'0','1') is_checked
+        from spu_sale_attr a
+        JOIN  spu_sale_attr_value v
+        on a.sale_attr_id=v.sale_attr_id
+        and a.spu_id=v.spu_id
+
+				left join sku_sale_attr_value ssav on v.id=ssav.sale_attr_value_id and ssav.sku_id=${skuId}
+        where a.spu_id=${spuId}
+    </select>
+
+</mapper>

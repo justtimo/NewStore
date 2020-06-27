@@ -4,6 +4,7 @@ import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.fastjson.JSON;
 import com.wby.store.bean.SkuInfo;
 import com.wby.store.bean.SpuSaleAttr;
+import com.wby.store.service.ListService;
 import com.wby.store.service.MangerService;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -21,6 +22,9 @@ public class ItemController {
     @Reference
     MangerService mangerService;
 
+    @Reference
+    ListService listService;
+
     @GetMapping("{skuId}.html")
     //@PathVariable:将someUrl/{paramId}中template 中变量，绑定到方法的参数上。
     //若方法参数名称和需要绑定的uri template中变量名称不一致，需要在@PathVariable("name")指定uri template中的名称。
@@ -37,6 +41,9 @@ public class ItemController {
         Map skuValueIdsMap = mangerService.getSkuValueIdsMap(skuInfo.getSpuId());
         String valuesSkuJSON = JSON.toJSONString(skuValueIdsMap);
         request.setAttribute("valuesSkuJSON",valuesSkuJSON);
+
+        listService.incrHotScore(skuId);
+
         return "item";
     }
 }

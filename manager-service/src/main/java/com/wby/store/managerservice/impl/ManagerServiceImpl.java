@@ -6,6 +6,7 @@ import com.wby.store.bean.*;
 import com.wby.store.managerservice.mapper.*;
 import com.wby.store.service.MangerService;
 import com.wby.store.util.RedisUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.redisson.Redisson;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
@@ -262,14 +263,14 @@ public class ManagerServiceImpl implements MangerService {
         }
     }
 
-    //@Override   //不带缓存
+    @Override   //不带缓存
     public SkuInfo getSkuINfoDB(String skuId) {
         System.out.println(Thread.currentThread()+"正在根据skuId查询数据库数据");
-        try {
+        /*try {
             Thread.sleep(3000);
         } catch (InterruptedException e) {
             e.printStackTrace();
-        }
+        }*/
 
         /*Example example = new Example(SkuInfo.class);
         example.createCriteria().andEqualTo("id",skuId);*/
@@ -291,14 +292,23 @@ public class ManagerServiceImpl implements MangerService {
                 skuSaleAttrValueMapper.select(skuSaleAttrValue);
         skuInfo.setSkuSaleAttrValueList(skuSaleAttrValueList);
 
+        //查询平台属性
+        SkuAttrValue skuAttrValue=new SkuAttrValue();
+        skuAttrValue.setSkuId(skuId);
+        List<SkuAttrValue> skuAttrValueList =
+                skuAttrValueMapper.select(skuAttrValue);
+        skuInfo.setSkuAttrValueList(skuAttrValueList);
+
         return skuInfo;
 
     }
    //带缓存
+   @Override
     public SkuInfo getSkuINfo_reids(String skuId) {
             SkuInfo skuInfoResult=null;
             //1.先查redis，么有再查数据库
             Jedis jedis=redisUtil.getJedis();
+
             int SKU_EXPIRE_SEC=3*60*60*12;
         /**
          * 首先要考虑redis结构：type（string,set,list,hash,zset）
@@ -392,7 +402,8 @@ public class ManagerServiceImpl implements MangerService {
         return skuInfoResult;
     }
 
-    @Override//使用redisson
+    //使用redisson
+    @Override
     public SkuInfo getSkuINfo(String skuId) {
         SkuInfo skuInfoResult=null;
         //1.先查redis，么有再查数据库
@@ -459,6 +470,7 @@ public class ManagerServiceImpl implements MangerService {
             }
 
         }
+        jedis.close();
         return skuInfoResult;
     }
 
@@ -482,6 +494,14 @@ public class ManagerServiceImpl implements MangerService {
             skuValueIds.put(valueIds,skuId);
         }
         return skuValueIds;
+    }
+
+    @Override
+    public List<BaseAttrInfo> getAttrList(List attrValueIdList) {
+        //List转换为13,14,15.
+        String valueIds = StringUtils.join(attrValueIdList, ",");
+        List<BaseAttrInfo> baseAttrInfoListByValueIds = baseAttrInfoMapper.getBaseAttrInfoListByValueIds(valueIds);
+        return baseAttrInfoListByValueIds;
     }
 
 

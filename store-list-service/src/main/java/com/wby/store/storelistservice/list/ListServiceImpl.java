@@ -6,10 +6,12 @@ import com.wby.store.bean.SkuLsInfo;
 import com.wby.store.bean.SkuLsParams;
 import com.wby.store.bean.SkuLsResult;
 import com.wby.store.service.ListService;
+import com.wby.store.util.RedisUtil;
 import io.searchbox.client.JestClient;
 import io.searchbox.core.Index;
 import io.searchbox.core.Search;
 import io.searchbox.core.SearchResult;
+import io.searchbox.core.Update;
 import io.searchbox.core.search.aggregation.MetricAggregation;
 import io.searchbox.core.search.aggregation.TermsAggregation;
 import org.elasticsearch.index.query.*;
@@ -19,6 +21,7 @@ import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.highlight.HighlightBuilder;
 import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.beans.factory.annotation.Autowired;
+import redis.clients.jedis.Jedis;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -27,8 +30,11 @@ import java.util.List;
 @Service
 public class ListServiceImpl implements ListService {
     @Autowired
+    RedisUtil redisUtil;
+
+    @Autowired
     JestClient jestClient;
-    //c测试整合。
+    //测试整合。
 
     /**
      * 哪里用到这个方法？上架商品。比如定时发售，先保存商品，到时间了再上架
@@ -201,6 +207,8 @@ public class ListServiceImpl implements ListService {
                 for (SearchResult.Hit<SkuLsInfo, Void> hit:hits
                 ) {
                     SkuLsInfo skuLsInfo = hit.source;
+                    String skuNameHL = hit.highlight.get("skuName").get(0);
+                    skuLsInfo.setSkuName(skuNameHL);
                     skuLsInfoList.add(skuLsInfo);
                 }
                 skuLsResult.setSkuLsInfoList(skuLsInfoList);
@@ -213,6 +221,7 @@ public class ListServiceImpl implements ListService {
             //总页数
             long totalPage= (total + skuLsParams.getPageSize() -1) / skuLsParams.getPageSize();
             skuLsResult.setTotalPages(totalPage);
+
 
             //聚合部分  商品涉及的平台属性值
             /*List<String> attrValueList = new ArrayList<>();
@@ -232,5 +241,37 @@ public class ListServiceImpl implements ListService {
             e.printStackTrace();
         }
         return skuLsResult;
+    }
+
+    @Override
+    public void incrHotScore(String skuId) {
+        Jedis jedis = redisUtil.getJedis();
+        //每次只需要在redis中做+1
+        //设计key。type（string）、key（sku：101：hotscore）、value（sku)
+        String hotScoreKey="sku:"+skuId+"hotScore";
+        Long hotScore = jedis.incr(hotScoreKey);
+        //计数可以被10整除，更新es
+        if (hotScore%10==0){
+            updateHotScoreEs(skuId,hotScore);
+        }
+
+    }
+
+    //跟新ES
+    public void updateHotScoreEs(String skuId,Long hotScore){
+        String updateJson="{\n" +
+                "   \"doc\":{\n" +
+                "     \"hotScore\":"+hotScore+"\n" +
+                "   }\n" +
+                "}";
+
+        Update build = new Update.Builder(updateJson)
+                .index("wby11_sku_info").type("_doc").id(skuId)
+                .build();
+        try {
+            jestClient.execute(build);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

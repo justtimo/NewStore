@@ -100,4 +100,12 @@ public interface MangerService{
      */
     public Map getSkuValueIdsMap(String spuId);
 
+
+    /**
+     * 根据多个属性值查询平台属性
+     */
+    public List<BaseAttrInfo> getAttrList(List attrValueIdList);
+
+
+
 }

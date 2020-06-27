@@ -13,7 +13,7 @@ public class RedisUtil {
         // 总数
         jedisPoolConfig.setMaxTotal(200);
         // 获取连接时等待的最大毫秒
-        jedisPoolConfig.setMaxWaitMillis(10*1000);
+        jedisPoolConfig.setMaxWaitMillis(1*1000);
         // 最少剩余数
         jedisPoolConfig.setMinIdle(10);
         //最多连接数
