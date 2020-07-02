@@ -21,7 +21,7 @@ public class PassPortController {
 
     String jwtKey="wby";
 
-    @GetMapping("index.html")
+    @GetMapping("index")
     public String idnex(){
         return "index";
     }
@@ -48,9 +48,9 @@ public class PassPortController {
              *  1 request.getRemoteAddr()//如果用户直接访问tomcat是可以获取到ip的，但是
              *      实际上中间经过了Nginx反向代理，取到的就是Nginx的地址，所以要配置Nginx
              */
-            String remoteAddr = request.getRemoteAddr();
+            //String remoteAddr = request.getRemoteAddr();
             String ipAddr = request.getHeader("X-forwarded-for");
-            String token = JWTUtil.encode(jwtKey, map, remoteAddr);
+            String token = JWTUtil.encode(jwtKey, map, ipAddr);
             return token;
         }
         return "fail";
@@ -62,6 +62,7 @@ public class PassPortController {
      * @param currentIp
      * @return
      */
+    //http:passport.wby.com/verify?token=XXXx&currentIp=xxxx
     @GetMapping("verify")
     public String verify(@RequestParam("token") String token,
                          @RequestParam("currentIp")String currentIp){
