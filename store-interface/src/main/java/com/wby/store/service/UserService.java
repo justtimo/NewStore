@@ -32,4 +32,8 @@ public interface UserService {
      *  删除数据
      */
     void delUser(UserInfo userInfo);
+
+    UserInfo login(UserInfo userInfo);
+
+    UserInfo verify(String userId);
 }
