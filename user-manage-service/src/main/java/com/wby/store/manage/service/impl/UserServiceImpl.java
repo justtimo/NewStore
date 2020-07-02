@@ -123,7 +123,16 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserInfo verify(String userId) {
+        //
+        Jedis jedis = redisUtil.getJedis();
+        String userKey=userKey_prefix+userId+userinfoKey_suffix;
+        Boolean isLogin = jedis.exists(userKey);
+        if (isLogin){//如果验证后，则延长用户使用时间
+            jedis.expire(userKey,userKey_timeOut);
+        }
 
-        return null;
+
+        jedis.close();
+        return null;//此处存疑
     }
 }
