@@ -35,5 +35,5 @@ public interface UserService {
 
     UserInfo login(UserInfo userInfo);
 
-    UserInfo verify(String userId);
+    Boolean verify(String userId);
 }
