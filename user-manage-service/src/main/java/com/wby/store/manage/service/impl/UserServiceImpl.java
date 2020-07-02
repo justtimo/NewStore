@@ -133,6 +133,6 @@ public class UserServiceImpl implements UserService {
 
 
         jedis.close();
-        return isLogin;//此处存疑
+        return isLogin;
     }
 }
