@@ -49,8 +49,10 @@ public class PassPortController {
              *      实际上中间经过了Nginx反向代理，取到的就是Nginx的地址，所以要配置Nginx
              */
             //String remoteAddr = request.getRemoteAddr();
-            String ipAddr = request.getHeader("X-forwarded-for");
-            String token = JWTUtil.encode(jwtKey, map, ipAddr);
+            String remoteAddr = "127.0.0.1";
+            //String ipAddr = request.getHeader("X-forwarded-for");生产环境使用
+            //String token =JWTUtil.encode(jwtKey, map, ipAddr);生产环境使用
+            String token = JWTUtil.encode(jwtKey, map, remoteAddr);
             return token;
         }
         return "fail";
@@ -64,6 +66,7 @@ public class PassPortController {
      */
     //http:passport.wby.com/verify?token=XXXx&currentIp=xxxx
     @GetMapping("verify")
+    @ResponseBody
     public String verify(@RequestParam("token") String token,
                          @RequestParam("currentIp")String currentIp){
         //1.验证token
@@ -72,8 +75,8 @@ public class PassPortController {
         if (userMap!=null){
             //2.验证缓存
             String userId = (String)userMap.get("userId");
-            UserInfo userInfo=userService.verify(userId);
-            if (userInfo!=null){
+            Boolean isLogin=userService.verify(userId);
+            if (isLogin){
                 return "success";
             }
         }
