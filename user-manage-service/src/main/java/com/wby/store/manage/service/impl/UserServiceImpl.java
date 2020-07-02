@@ -122,7 +122,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserInfo verify(String userId) {
+    public Boolean verify(String userId) {
         //
         Jedis jedis = redisUtil.getJedis();
         String userKey=userKey_prefix+userId+userinfoKey_suffix;
@@ -133,6 +133,6 @@ public class UserServiceImpl implements UserService {
 
 
         jedis.close();
-        return null;//此处存疑
+        return isLogin;//此处存疑
     }
 }
