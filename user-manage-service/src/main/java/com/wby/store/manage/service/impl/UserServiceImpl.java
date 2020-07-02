@@ -2,11 +2,16 @@ package com.wby.store.manage.service.impl;
 
 
 import com.alibaba.dubbo.config.annotation.Service;
+import com.alibaba.fastjson.JSON;
 import com.wby.store.bean.UserInfo;
 import com.wby.store.manage.mapper.UserInfoMapper;
 import com.wby.store.service.UserService;
+import com.wby.store.util.RedisUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 
+
+import org.springframework.util.DigestUtils;
+import redis.clients.jedis.Jedis;
 import tk.mybatis.mapper.entity.Example;
 
 import java.util.List;
@@ -17,6 +22,15 @@ public class UserServiceImpl implements UserService {
     // 表示当前UsernfoMapper在容器中！
     @Autowired
     private UserInfoMapper userInfoMapper;
+
+    @Autowired
+    RedisUtil redisUtil;
+
+    public String userKey_prefix="user:";
+    public String userinfoKey_suffix=":info";
+    public int userKey_timeOut=60*60*24;
+
+
 
     @Override
     public List<UserInfo> findAll() {
@@ -81,5 +95,35 @@ public class UserServiceImpl implements UserService {
         // delete from userInfo where nickName = ?
         // example 主要作用就是封装条件
         userInfoMapper.delete(userInfo);
+    }
+
+    @Override
+    public UserInfo login(UserInfo userInfo) {
+        //1.对比数据库，用户名密码
+        String password=userInfo.getPasswd();
+        String passwordMd5=
+                DigestUtils.md5DigestAsHex(userInfo.getPasswd().getBytes());
+        userInfo.setPasswd(passwordMd5);
+
+        UserInfo userInfoExists = userInfoMapper.selectOne(userInfo);
+        if (userInfoExists!=null){
+            //2.加载缓存
+            Jedis jedis = redisUtil.getJedis();
+            //type string可以单独设置过期时间 key user:101:info value  UserinfoJson
+            String userKey=userKey_prefix+userInfoExists.getId()+userinfoKey_suffix;
+            String userInfoJson = JSON.toJSONString(userInfoExists);
+            jedis.setex(userKey,userKey_timeOut,userInfoJson);
+            jedis.close();
+            return userInfoExists;
+        }
+        return null;
+
+
+    }
+
+    @Override
+    public UserInfo verify(String userId) {
+
+        return null;
     }
 }
