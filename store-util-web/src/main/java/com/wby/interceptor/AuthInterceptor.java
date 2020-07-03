@@ -16,13 +16,18 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.lang.invoke.MethodHandle;
 import java.net.URLEncoder;
+import java.util.HashMap;
 import java.util.Map;
 
 import static com.wby.constants.WebConst.VERIFY_URL;
 
+/**
+ * 拦截器
+ */
 @Component
 public class AuthInterceptor  extends HandlerInterceptorAdapter {
 
+    @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         String token=null;
         //一.检查token。可能存在：
@@ -43,20 +48,26 @@ public class AuthInterceptor  extends HandlerInterceptorAdapter {
 
 
         //如果token有，从yoken中把用户信息取出来
-        Map userMap = getUserMapFromToken(token);
-        String nickName = (String)userMap.get("nickName");
-        request.setAttribute("nickName",nickName);
+        Map userMap=new HashMap();
+        if (token!=null){
+            userMap = getUserMapFromToken(token);
+            String nickName = (String)userMap.get("nickName");
+            request.setAttribute("nickName",nickName);
+        }
+
 
         //判断是否该请求需要用户登陆
         //取到请求的方法上的注解，是否有LoginRequire。
         HandlerMethod handlerMethod = (HandlerMethod) handler;
         LoginRequire loginRequire =
                 handlerMethod.getMethodAnnotation(LoginRequire.class);
+
         if (loginRequire!=null){
             //需要认证
             if (token!=null){
                 //吧token发给认证中心认证
-                String currentIp = request.getHeader("X-forwarded-for");
+                //String currentIp = request.getHeader("X-forwarded-for");生产黄静使用
+                String currentIp ="127.0.0.1";//本地测试使用
 
                 String result =
                         HttpClientUtil.doGet(VERIFY_URL + "?token=" + token + "&currentIp=" + currentIp);
