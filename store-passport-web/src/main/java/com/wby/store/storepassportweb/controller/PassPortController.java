@@ -5,6 +5,7 @@ import com.wby.store.bean.UserInfo;
 import com.wby.store.service.UserService;
 import com.wby.util.JWTUtil;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -22,7 +23,8 @@ public class PassPortController {
     String jwtKey="wby";
 
     @GetMapping("index")
-    public String idnex(){
+    public String idnex(@RequestParam("originUrl") String originUrl, Model model){
+        model.addAttribute("originUrl",originUrl);
         return "index";
     }
 
