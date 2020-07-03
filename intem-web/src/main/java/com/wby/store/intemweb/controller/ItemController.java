@@ -45,7 +45,7 @@ public class ItemController {
         request.setAttribute("valuesSkuJSON",valuesSkuJSON);
 
         listService.incrHotScore(skuId);
-
+        request.getAttribute("userId");
         return "item";
     }
 }
