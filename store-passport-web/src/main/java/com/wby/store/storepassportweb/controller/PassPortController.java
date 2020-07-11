@@ -22,7 +22,7 @@ public class PassPortController {
 
     String jwtKey="wby";
 
-    @GetMapping("index")
+    @GetMapping("index.html")
     public String idnex(@RequestParam("originUrl") String originUrl, Model model){
         model.addAttribute("originUrl",originUrl);
         return "index";

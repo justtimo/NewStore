@@ -27,7 +27,6 @@ public class ItemController {
     ListService listService;
 
     @GetMapping("{skuId}.html")
-    @LoginRequire
     //@PathVariable:将someUrl/{paramId}中template 中变量，绑定到方法的参数上。
     //若方法参数名称和需要绑定的uri template中变量名称不一致，需要在@PathVariable("name")指定uri template中的名称。
     public String item(@PathVariable("skuId") String skuId, HttpServletRequest request){

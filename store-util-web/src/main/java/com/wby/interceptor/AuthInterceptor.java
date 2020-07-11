@@ -84,15 +84,16 @@ public class AuthInterceptor  extends HandlerInterceptorAdapter {
 
                 }
             }else{
-                //重定向到passport让用户进行登陆
-                redirect(request,response);
-                return false;
+                if (!loginRequire.autoRedirect()){//认证失败，但是允许不跳转
+                    return true;
+                }else {//认证失败，强行跳转
+                    redirect(request, response);
+                    return false;
+                    //重定向到passport让用户进行登陆
+                }
+
             }
         }
-
-
-
-
 
         return true;
     }
