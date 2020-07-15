@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import sun.java2d.pipe.AAShapePipe;
+import sun.java2d.pipe.RenderQueue;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -48,7 +49,7 @@ public class CartController {
     }
 
     @GetMapping("cartList")
-    @LoginRequire
+    @LoginRequire(autoRedirect = false)
     public String cartList(HttpServletRequest request){
         String userId = (String)request.getAttribute("userId");
         if (userId==null){
@@ -56,13 +57,15 @@ public class CartController {
                     CookieUtil.getCookieValue(request, "user_tem_id", false);
 
         }
-        if (userId==null){
-            return "cartList";
-        }else {
+        if (userId!=null){
             List<CartInfo> cartInfoList = cartService.cartList(userId);
+            request.setAttribute("cartList",cartInfoList);
+
         }
 
-        return null;
+        return "cartList";
     }
+
+
 
 }

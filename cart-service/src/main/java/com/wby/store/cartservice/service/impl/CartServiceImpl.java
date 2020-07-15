@@ -12,9 +12,7 @@ import com.wby.store.util.RedisUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import redis.clients.jedis.Jedis;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class CartServiceImpl implements CartService {
@@ -77,7 +75,7 @@ public class CartServiceImpl implements CartService {
 
         List<String> cartJSONList = jedis.hvals(cartKey);
         List<CartInfo> cartInfoList=new ArrayList<>();
-        if (cartJSONList!=null){//命中缓存
+        if (cartJSONList!=null&&cartJSONList.size()>0){//命中缓存
             for (String cartJSON:cartJSONList
              ) {
                 CartInfo cartInfo = JSON.parseObject(cartJSON, CartInfo.class);
@@ -90,21 +88,51 @@ public class CartServiceImpl implements CartService {
 
                 }
             });
+            //cartInfoList.sort((o1, o2) -> -1);
             return cartInfoList;
-        }else {//缓存未命中
-
+        }else {//缓存未命中,同时加载到缓存中
+           return loadCartCache(userId);
         }
 
-        //缓存没有查数据库，同时加载到缓存中
 
-        return null;
+
     }
 
+    /**
+     * 缓存未命中,同时加载到缓存中
+     * @param userId
+     * @return
+     */
     public List<CartInfo> loadCartCache(String userId){
-        //读取数据库
+        /*//读取数据库
         CartInfo cartInfo=new CartInfo();
         cartInfo.setUserId(userId);
         List<CartInfo> cartInfoList = cartInfoMapper.select(cartInfo);
         //写入缓存
+        for (CartInfo cartInfo1 :cartInfoList
+             ) {
+            List<CartInfo> cartInfoList1 =
+                    cartInfoMapper.selectCartListWithSkuPrice(userId);
+
+        }*/
+
+
+        //读取数据库
+        List<CartInfo> cartInfoList =
+                cartInfoMapper.selectCartListWithSkuPrice(userId);
+        //写入缓存
+        Jedis jedis = redisUtil.getJedis();
+            //方便插入，把list转换为map
+        Map<String,String > cartMap=new HashMap<>();
+        for (CartInfo cartInfo:cartInfoList
+             ) {
+            cartMap.put(cartInfo.getSkuId(),JSON.toJSONString(cartInfo));
+        }
+        String cartKey="cart:"+userId+":info";
+        jedis.hmset(cartKey,cartMap);
+        jedis.expire(cartKey,60*60*24);
+
+
+        return cartInfoList;
     }
 }
