@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper SYSTEM "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wby.store.cartservice.service.mapper.CartInfoMapper">
+    <select id="selectCartListWithSkuPrice" resultMap="cartMap">
+        select ci.id,ci.user_id,ci.sku_id,ci.cart_price,ci.sku_num,ci.img_url,ci.sku_name,
+        si.price sku_price
+        from cart_info ci
+        LEFT JOIN sku_info si
+        ON ci.sku_id=si.id
+        where ci.user_id=#{userId}
+
+    </select>
+    <resultMap id="cartMap" type="com.wby.store.bean.CartInfo" autoMapping="true">
+
+    </resultMap>
+
+</mapper>
